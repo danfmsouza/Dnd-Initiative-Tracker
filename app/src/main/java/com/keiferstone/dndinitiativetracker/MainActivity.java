@@ -10,12 +10,16 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -37,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         setContentView(R.layout.activity_main);
 
         characterStorage = new CharacterStorage(this);
-        characters = characterStorage.loadCharacters();
+        characters = characterStorage.loadAllCharacters();
         sortCharacters();
 
         characterAdapter = new CharacterAdapter(characters, this);
@@ -59,6 +63,34 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
                 showAddCharacterDialog();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_roll:
+                rollInitiative();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        for (Character character : characters) {
+            characterStorage.saveCharacter(character);
+        }
     }
 
     @Override
@@ -94,18 +126,6 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         CharacterDialog.show(getFragmentManager(), character);
     }
 
-    private void markCharacter(Character character) {
-        boolean alreadyMarked = character.isMarked();
-        for (Character c : characters) {
-            if (c.isMarked()) {
-                c.setMarked(false);
-                characterStorage.saveCharacter(c);
-            }
-        }
-        character.setMarked(!alreadyMarked);
-        characterStorage.saveCharacter(character);
-    }
-
     private void sortCharacters() {
         Collections.sort(characters, new Comparator<Character>() {
             @Override
@@ -119,6 +139,41 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
                 }
             }
         });
+    }
+
+    private void markCharacter(Character character) {
+        boolean alreadyMarked = character.isMarked();
+        for (Character c : characters) {
+            if (c.isMarked()) {
+                c.setMarked(false);
+            }
+        }
+        character.setMarked(!alreadyMarked);
+    }
+
+    private void rollInitiative() {
+        for (Character character : characters) {
+            characterStorage.saveCharacter(character);
+            character.setD20(rollD20());
+        }
+        sortCharacters();
+        characterAdapter.notifyDataSetChanged();
+        Snackbar.make(characterRecycler, R.string.initiative_rolled, Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        characters.clear();
+                        characters.addAll(characterStorage.loadAllCharacters());
+                        sortCharacters();
+                        characterAdapter.notifyDataSetChanged();
+                    }
+                })
+                .setActionTextColor(ContextCompat.getColor(MainActivity.this, R.color.white))
+                .show();
+    }
+
+    private int rollD20() {
+        return ThreadLocalRandom.current().nextInt(1, 21);
     }
 
     private class ItemTouchCallbacks extends ItemTouchHelper.SimpleCallback {

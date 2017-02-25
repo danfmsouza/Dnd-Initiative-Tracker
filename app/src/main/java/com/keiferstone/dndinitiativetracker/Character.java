@@ -9,13 +9,15 @@ import java.util.UUID;
 class Character implements Parcelable {
     private String id;
     private String name;
-    private int initiative;
+    private int modifier;
+    private int d20;
     private boolean marked;
 
-    Character(String name, int initiative) {
+    Character(String name, int modifier, int d20) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
-        this.initiative = initiative;
+        this.modifier = modifier;
+        this.d20 = d20;
         this.marked = false;
     }
 
@@ -31,20 +33,32 @@ class Character implements Parcelable {
         this.name = name;
     }
 
-    int getInitiative() {
-        return initiative;
+    int getModifier() {
+        return modifier;
     }
 
-    public void setInitiative(int initiative) {
-        this.initiative = initiative;
+    void setModifier(int modifier) {
+        this.modifier = modifier;
     }
 
-    public boolean isMarked() {
+    int getD20() {
+        return d20;
+    }
+
+    void setD20(int d20) {
+        this.d20 = d20;
+    }
+
+    boolean isMarked() {
         return marked;
     }
 
     void setMarked(boolean marked) {
         this.marked = marked;
+    }
+
+    int getInitiative() {
+        return getModifier() + getD20();
     }
 
     @Override
@@ -72,14 +86,14 @@ class Character implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.id.toString());
         dest.writeString(this.name);
-        dest.writeInt(this.initiative);
+        dest.writeInt(this.modifier);
         dest.writeInt(this.marked ? 1 : 0);
     }
 
     protected Character(Parcel in) {
         this.id = in.readString();
         this.name = in.readString();
-        this.initiative = in.readInt();
+        this.modifier = in.readInt();
         this.marked = in.readInt() == 1;
     }
 

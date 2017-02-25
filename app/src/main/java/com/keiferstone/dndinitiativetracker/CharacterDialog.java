@@ -15,8 +15,10 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 public class CharacterDialog extends DialogFragment {
     private static final String TAG = CharacterDialog.class.getSimpleName();
@@ -39,7 +41,8 @@ public class CharacterDialog extends DialogFragment {
     private Callbacks callbacks;
 
     private EditText nameEntry;
-    private EditText initiativeEntry;
+    private EditText modifierEntry;
+    private Spinner d20Spinner;
 
     @Override
     public void onAttach(Context context) {
@@ -59,9 +62,9 @@ public class CharacterDialog extends DialogFragment {
         final Character character = args != null ? (Character) args.getParcelable(ARG_CHARACTER) : null;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.add_character)
+        builder.setTitle(character == null ? R.string.add_character : R.string.edit_character)
                 .setView(getCharacterView(character))
-                .setPositiveButton(R.string.add, null)
+                .setPositiveButton(R.string.save, null)
                 .setNegativeButton(R.string.cancel, null);
         Dialog dialog = builder.create();
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -83,15 +86,23 @@ public class CharacterDialog extends DialogFragment {
     }
 
     private View getCharacterView(@Nullable Character character) {
-        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_add_character, (ViewGroup) getView(), false);
+        View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_character, (ViewGroup) getView(), false);
         nameEntry = (EditText) view.findViewById(R.id.name_entry);
         nameEntry.addTextChangedListener(clearErrorTextWatcher);
-        initiativeEntry = (EditText) view.findViewById(R.id.initiative_entry);
-        initiativeEntry.addTextChangedListener(clearErrorTextWatcher);
-        initiativeEntry.setFilters(new InputFilter[] {initiativeFilter});
+
+        modifierEntry = (EditText) view.findViewById(R.id.modifier_entry);
+        modifierEntry.addTextChangedListener(clearErrorTextWatcher);
+        modifierEntry.setFilters(new InputFilter[] {initiativeFilter});
+
+        d20Spinner = (Spinner) view.findViewById(R.id.d20_spinner);
+        ArrayAdapter<CharSequence> d20Adapter = ArrayAdapter.createFromResource(getActivity(), R.array.d20, android.R.layout.simple_spinner_item);
+        d20Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        d20Spinner.setAdapter(d20Adapter);
+
         if (character != null) {
             nameEntry.setText(character.getName());
-            initiativeEntry.setText(String.valueOf(character.getInitiative()));
+            modifierEntry.setText(String.valueOf(character.getModifier()));
+            d20Spinner.setSelection(character.getD20() - 1);
         }
         return view;
     }
@@ -100,8 +111,8 @@ public class CharacterDialog extends DialogFragment {
         return nameEntry.getText().toString();
     }
 
-    private int getInitiative() {
-        String initiativeText = initiativeEntry.getText().toString();
+    private int getModifier() {
+        String initiativeText = modifierEntry.getText().toString();
         if (!TextUtils.isEmpty(initiativeText)) {
             try {
                 return Integer.parseInt(initiativeText);
@@ -113,25 +124,37 @@ public class CharacterDialog extends DialogFragment {
         return 0;
     }
 
+    private int getD20() {
+        try {
+            return Integer.parseInt((String) d20Spinner.getSelectedItem());
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        return 1;
+    }
+
     private boolean validateInputs() {
-        return !TextUtils.isEmpty(getName()) && getInitiative() > 0;
+        return !TextUtils.isEmpty(getName()) && getModifier() > 0;
     }
 
     private boolean createCharacter(@Nullable Character character) {
         if (validateInputs()) {
             if (character != null) {
                 character.setName(getName());
-                character.setInitiative(getInitiative());
+                character.setModifier(getModifier());
+                character.setD20(getD20());
             } else {
-                character = new Character(getName(), getInitiative());
+                character = new Character(getName(), getModifier(), getD20());
             }
+
             if (callbacks != null) {
                 callbacks.onCharacterCreated(character);
             }
             return true;
         } else {
             nameEntry.setError("Name plz");
-            initiativeEntry.setError("Initiative plz");
+            modifierEntry.setError("Modifier plz");
             return false;
         }
     }
@@ -143,7 +166,7 @@ public class CharacterDialog extends DialogFragment {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             nameEntry.setError(null);
-            initiativeEntry.setError(null);
+            modifierEntry.setError(null);
         }
 
         @Override

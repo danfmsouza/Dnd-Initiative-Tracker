@@ -20,7 +20,7 @@ class CharacterStorage {
     }
 
     @NonNull
-    List<Character> loadCharacters() {
+    List<Character> loadAllCharacters() {
         List<Character> characters = new ArrayList<>();
         Map<String, ?> characterPrefs = sharedPreferences.getAll();
         for (Object characterJson : characterPrefs.values()) {

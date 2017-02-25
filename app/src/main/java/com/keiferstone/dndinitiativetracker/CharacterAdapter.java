@@ -53,6 +53,7 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
         });
         holder.name.setText(character.getName());
         holder.initiative.setText(String.valueOf(character.getInitiative()));
+        holder.initiativeBreakdown.setText(getInitiativeBreakdown(holder.itemView.getContext(), character));
         holder.marker.setVisibility(character.isMarked() ? View.VISIBLE : View.INVISIBLE);
     }
 
@@ -74,11 +75,16 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
         }
     }
 
+    private String getInitiativeBreakdown(Context context, Character character) {
+        return context.getString(R.string.initiative_breakdown, character.getD20(), character.getModifier());
+    }
+
     class CharacterViewHolder extends RecyclerView.ViewHolder {
         View deleteIcon;
         View container;
         TextView name;
         TextView initiative;
+        TextView initiativeBreakdown;
         View marker;
 
         CharacterViewHolder(View itemView) {
@@ -87,6 +93,7 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
             container = itemView.findViewById(R.id.character_container);
             name = (TextView) itemView.findViewById(R.id.name);
             initiative = (TextView) itemView.findViewById(R.id.initiative);
+            initiativeBreakdown = (TextView) itemView.findViewById(R.id.initiative_breakdown);
             marker = itemView.findViewById(R.id.marker);
         }
 

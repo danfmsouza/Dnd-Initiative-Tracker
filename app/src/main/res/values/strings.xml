@@ -1,13 +1,40 @@
 <resources>
     <string name="app_name">DnD Initiative Tracker</string>
     <string name="name">Name</string>
-    <string name="initiative">Init.</string>
+    <string name="initiative_modifier">Modifier</string>
     <string name="add_character">Add Character</string>
-    <string name="add">Add</string>
+    <string name="edit_character">Edit Character</string>
+    <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="character_removed">Character removed</string>
     <string name="undo">Undo</string>
     <string name="delete">Delete</string>
     <string name="marker">Marker</string>
     <string name="no_characters">No Characters</string>
+    <string name="roll">Roll</string>
+    <string name="initiative_rolled">Initiative rolled</string>
+    <string name="initiative_breakdown">%1$d(+%2$d)</string>
+
+    <string-array name="d20">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+    </string-array>
 </resources>
