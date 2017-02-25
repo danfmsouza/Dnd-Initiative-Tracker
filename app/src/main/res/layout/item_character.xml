@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="76dp"
+    android:background="@color/red">
+
+    <ImageView
+        android:id="@+id/delete_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_delete"
+        android:tint="@color/white"
+        android:layout_gravity="center_vertical|end"
+        android:contentDescription="@string/delete"/>
+
+    <RelativeLayout
+        android:id="@+id/character_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:elevation="4dp">
+
+        <TextView
+            android:id="@+id/initiative"
+            android:layout_width="76dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:textSize="42sp"
+            tools:ignore="MissingPrefix"/>
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/initiative"
+            android:layout_toStartOf="@+id/marker"
+            android:textSize="20sp"
+            tools:ignore="MissingPrefix"/>
+
+        <ImageView
+            android:id="@id/marker"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="8dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_swords"
+            android:tint="@color/colorAccent"
+            android:visibility="invisible"
+            android:contentDescription="@string/marker"/>
+
+    </RelativeLayout>
+
+</FrameLayout>
