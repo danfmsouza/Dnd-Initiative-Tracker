@@ -12,14 +12,14 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 
-public class ComplexCharacterDialog extends CharacterDialog {
+public class DmCharacterDialog extends CharacterDialog {
     private EditText modifierEntry;
     private Spinner d20Spinner;
 
     @Override
     protected View getCharacterView(@Nullable Character character) {
         View view = getActivity().getLayoutInflater().inflate(
-                R.layout.dialog_character_complex, (ViewGroup) getView(), false);
+                R.layout.dialog_character_dm, (ViewGroup) getView(), false);
 
         nameEntry = (EditText) view.findViewById(R.id.name_entry);
         nameEntry.addTextChangedListener(clearErrorTextWatcher);
@@ -28,8 +28,8 @@ public class ComplexCharacterDialog extends CharacterDialog {
         modifierEntry.setFilters(new InputFilter[]{initiativeFilter});
 
         d20Spinner = (Spinner) view.findViewById(R.id.d20_spinner);
-        ArrayAdapter<CharSequence> d20Adapter = ArrayAdapter.createFromResource(getActivity(), R.array.d20, android.R.layout.simple_spinner_item);
-        d20Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<CharSequence> d20Adapter = ArrayAdapter.createFromResource(getActivity(), R.array.d20, R.layout.spinner_item);
+        d20Adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         d20Spinner.setAdapter(d20Adapter);
 
         if (character != null) {

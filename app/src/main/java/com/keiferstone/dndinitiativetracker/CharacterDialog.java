@@ -28,7 +28,7 @@ public abstract class CharacterDialog extends DialogFragment {
         if (mode == MODE_SIMPLE) {
             dialog = new SimpleCharacterDialog();
         } else {
-            dialog = new ComplexCharacterDialog();
+            dialog = new DmCharacterDialog();
         }
         Bundle args = new Bundle();
         args.putInt(ARG_MODE, mode);
@@ -41,7 +41,7 @@ public abstract class CharacterDialog extends DialogFragment {
         if (mode == MODE_SIMPLE) {
             dialog = new SimpleCharacterDialog();
         } else {
-            dialog = new ComplexCharacterDialog();
+            dialog = new DmCharacterDialog();
         }
         Bundle args = new Bundle();
         args.putParcelable(ARG_CHARACTER, character);
