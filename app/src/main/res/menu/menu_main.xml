@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_roll"
         android:title="@string/roll"
         android:icon="@drawable/ic_die"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_mode"
+        android:title="@string/mode"
+        app:showAsAction="never">
+
+        <menu>
+            <item
+                android:id="@+id/mode_simple"
+                android:title="@string/simple"
+                app:showAsAction="never"/>
+
+            <item
+                android:id="@+id/mode_complex"
+                android:title="@string/complex"
+                app:showAsAction="never"/>
+        </menu>
+    </item>
 </menu>

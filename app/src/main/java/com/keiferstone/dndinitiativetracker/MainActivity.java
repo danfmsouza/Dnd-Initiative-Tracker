@@ -24,6 +24,11 @@ import java.util.concurrent.ThreadLocalRandom;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity implements CharacterDialog.Callbacks, CharacterAdapter.OnCharacterClickListener {
+    public static final int MODE_SIMPLE = 0;
+    public static final int MODE_COMPLEX = 1;
+
+    private int mode;
+
     private CharacterStorage characterStorage;
     private CharacterAdapter characterAdapter;
     private List<Character> characters;
@@ -40,11 +45,13 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mode = Preferences.getMode(this);
+
         characterStorage = new CharacterStorage(this);
         characters = characterStorage.loadAllCharacters();
         sortCharacters();
 
-        characterAdapter = new CharacterAdapter(characters, this);
+        characterAdapter = new CharacterAdapter(characters, this, mode);
 
         characterRecycler = (RecyclerView) findViewById(R.id.character_recycler);
         characterRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -73,11 +80,23 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.getItem(0).setVisible(mode == MODE_COMPLEX);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_roll:
                 rollInitiative();
+                return true;
+            case R.id.mode_simple:
+                setMode(MODE_SIMPLE);
+                return true;
+            case R.id.mode_complex:
+                setMode(MODE_COMPLEX);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -118,12 +137,19 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         showEditCharacterDialog(character);
     }
 
+    private void setMode(int mode) {
+        this.mode = mode;
+        invalidateOptionsMenu();
+        characterAdapter.setMode(mode);
+        Preferences.setMode(this, mode);
+    }
+
     private void showAddCharacterDialog() {
-        CharacterDialog.show(getFragmentManager());
+        CharacterDialog.show(getFragmentManager(), mode);
     }
 
     private void showEditCharacterDialog(Character character) {
-        CharacterDialog.show(getFragmentManager(), character);
+        CharacterDialog.show(getFragmentManager(), character, mode);
     }
 
     private void sortCharacters() {
@@ -200,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
                             sortCharacters();
                             characterStorage.saveCharacter(character);
                             characterAdapter.notifyItemInserted(adapterPosition);
+                            emptyText.setVisibility(characters.isEmpty() ? View.VISIBLE : View.GONE);
                         }
                     })
                     .setActionTextColor(ContextCompat.getColor(MainActivity.this, R.color.white))
