@@ -67,7 +67,7 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
         return characters.size();
     }
 
-    public void setMode(int mode) {
+    void setMode(int mode) {
         this.mode = mode;
         notifyDataSetChanged();
     }
