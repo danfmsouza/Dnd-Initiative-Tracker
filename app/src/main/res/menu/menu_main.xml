@@ -20,8 +20,8 @@
                 app:showAsAction="never"/>
 
             <item
-                android:id="@+id/mode_complex"
-                android:title="@string/complex"
+                android:id="@+id/mode_dm"
+                android:title="@string/dm"
                 app:showAsAction="never"/>
         </menu>
     </item>

@@ -25,7 +25,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity implements CharacterDialog.Callbacks, CharacterAdapter.OnCharacterClickListener {
     public static final int MODE_SIMPLE = 0;
-    public static final int MODE_COMPLEX = 1;
+    public static final int MODE_DM = 1;
 
     private int mode;
 
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.getItem(0).setVisible(mode == MODE_COMPLEX);
+        menu.getItem(0).setVisible(mode == MODE_DM);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -95,8 +95,8 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
             case R.id.mode_simple:
                 setMode(MODE_SIMPLE);
                 return true;
-            case R.id.mode_complex:
-                setMode(MODE_COMPLEX);
+            case R.id.mode_dm:
+                setMode(MODE_DM);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
