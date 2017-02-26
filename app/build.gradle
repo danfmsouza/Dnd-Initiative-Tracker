@@ -1,5 +1,15 @@
 apply plugin: 'com.android.application'
 
+Properties properties = new Properties()
+File propFile = project.rootProject.file('keystore.properties')
+if (propFile != null && propFile.exists()) properties.load(propFile.newDataInputStream())
+project.ext {
+    keystorePath = properties.getProperty('keystore.path')
+    keystorePassword = properties.getProperty('keystore.password')
+    keyAlias = properties.getProperty('key.alias')
+    keyPassword = properties.getProperty('key.password')
+}
+
 // Manifest version information major.minor.patch.hotfix
 def versionMajor = 1  // Must be in [0, 99]
 def versionMinor = 1  // Must be in [0, 99]
@@ -24,10 +34,10 @@ android {
 
     signingConfigs {
         releaseConfig {
-            storeFile file(System.getenv("ANDROID_KEY_STORE"))
-            storePassword System.getenv("ANDROID_KEY_STORE_PASSWORD")
-            keyAlias System.getenv("ANDROID_KEY_ALIAS")
-            keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+            storeFile file(project.ext.keystorePath)
+            storePassword project.ext.keystorePassword
+            keyAlias project.ext.keyAlias
+            keyPassword project.ext.keyPassword
         }
     }
 
