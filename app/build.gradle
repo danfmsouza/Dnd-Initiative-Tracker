@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+// Manifest version information major.minor.patch.hotfix
+def versionMajor = 1  // Must be in [0, 99]
+def versionMinor = 1  // Must be in [0, 99]
+def versionPatch = 0  // Must be in [0, 99]
+def versionHotfix = 0 // Must be in [0, 9]
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -7,8 +13,8 @@ android {
         applicationId "com.keiferstone.dndinitiativetracker"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode versionMajor * 100000 + versionMinor * 1000 + versionPatch * 10 + versionHotfix
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
