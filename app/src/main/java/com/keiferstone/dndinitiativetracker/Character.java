@@ -84,13 +84,13 @@ class Character implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.id.toString());
+        dest.writeString(this.id);
         dest.writeString(this.name);
         dest.writeInt(this.modifier);
         dest.writeInt(this.marked ? 1 : 0);
     }
 
-    protected Character(Parcel in) {
+    private Character(Parcel in) {
         this.id = in.readString();
         this.name = in.readString();
         this.modifier = in.readInt();

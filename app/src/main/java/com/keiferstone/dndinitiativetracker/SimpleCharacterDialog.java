@@ -3,7 +3,6 @@ package com.keiferstone.dndinitiativetracker;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
