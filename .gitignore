@@ -1,10 +1,26 @@
+# Mac files
+.DS_STORE
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Local gradle config file
+gradle.properties
+
+# Local keystore config file
+keystore.properties
+
+# Eclipse project files
+.classpath
+.project
+
+# Android Studio
 *.iml
+.idea
 .gradle
-/local.properties
-/keystore.properties
-/.idea/workspace.xml
-/.idea/libraries
-.DS_Store
-/build
-/captures
-.externalNativeBuild
+build/
+*.apk
+
+# Don't ignore run configurations
+!.idea/runConfigurations/*
+
