@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -218,6 +219,24 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         return ThreadLocalRandom.current().nextInt(1, 21);
     }
 
+    private void deleteCharacter(final Character character, final int position) {
+        characterStorage.deleteCharacter(character);
+        characterAdapter.notifyItemRemoved(position);
+        Snackbar.make(characterRecycler, R.string.character_removed, Snackbar.LENGTH_LONG)
+                .setAction(R.string.undo, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        characters.add(position, character);
+                        sortCharacters();
+                        characterStorage.saveCharacter(character);
+                        characterAdapter.notifyItemInserted(position);
+                        emptyText.setVisibility(characters.isEmpty() ? View.VISIBLE : View.GONE);
+                    }
+                })
+                .setActionTextColor(ContextCompat.getColor(MainActivity.this, R.color.white))
+                .show();
+    }
+
     private class ItemTouchCallbacks extends ItemTouchHelper.SimpleCallback {
         ItemTouchCallbacks(int dragDirs, int swipeDirs) {
             super(dragDirs, swipeDirs);
@@ -231,22 +250,7 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             final int adapterPosition = viewHolder.getAdapterPosition();
-            final Character character = characters.remove(adapterPosition);
-            characterStorage.deleteCharacter(character);
-            characterAdapter.notifyItemRemoved(adapterPosition);
-            Snackbar.make(characterRecycler, R.string.character_removed, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.undo, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            characters.add(adapterPosition, character);
-                            sortCharacters();
-                            characterStorage.saveCharacter(character);
-                            characterAdapter.notifyItemInserted(adapterPosition);
-                            emptyText.setVisibility(characters.isEmpty() ? View.VISIBLE : View.GONE);
-                        }
-                    })
-                    .setActionTextColor(ContextCompat.getColor(MainActivity.this, R.color.white))
-                    .show();
+            deleteCharacter(characters.remove(adapterPosition), adapterPosition);
         }
 
         @Override
