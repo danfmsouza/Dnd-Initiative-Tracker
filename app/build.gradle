@@ -1,24 +1,49 @@
 apply plugin: 'com.android.application'
 
+Properties properties = new Properties()
+File propFile = project.rootProject.file('keystore.properties')
+if (propFile != null && propFile.exists()) properties.load(propFile.newDataInputStream())
+project.ext {
+    keystorePath = properties.getProperty('keystore.path')
+    keystorePassword = properties.getProperty('keystore.password')
+    keyAlias = properties.getProperty('key.alias')
+    keyPassword = properties.getProperty('key.password')
+}
+
 // Manifest version information major.minor.patch.hotfix
 def versionMajor = 1  // Must be in [0, 99]
 def versionMinor = 1  // Must be in [0, 99]
-def versionPatch = 1  // Must be in [0, 99]
+def versionPatch = 2  // Must be in [0, 99]
 def versionHotfix = 0 // Must be in [0, 9]
 
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+
     defaultConfig {
         applicationId "com.keiferstone.dndinitiativetracker"
+
         minSdkVersion 21
         targetSdkVersion 25
+
         versionCode versionMajor * 100000 + versionMinor * 1000 + versionPatch * 10 + versionHotfix
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    signingConfigs {
+        releaseConfig {
+            storeFile file(project.ext.keystorePath)
+            storePassword project.ext.keystorePassword
+            keyAlias project.ext.keyAlias
+            keyPassword project.ext.keyPassword
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.releaseConfig
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -26,14 +51,21 @@ android {
 }
 
 dependencies {
+    // Local libraries
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Android support libraries
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support:design:25.2.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0'
+
+    // Third party libraries
+    compile 'uk.co.chrisjenx:calligraphy:2.2.0'
+    compile 'com.google.code.gson:gson:2.8.0'
+
+    // Test libraries
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.android.support:design:25.2.0'
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0'
-    compile 'uk.co.chrisjenx:calligraphy:2.2.0'
-    compile 'com.google.code.gson:gson:2.8.0'
 }

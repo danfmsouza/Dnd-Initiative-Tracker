@@ -54,7 +54,8 @@ public class SimpleCharacterDialog extends CharacterDialog {
             valid = false;
         }
 
-        if (getInitiative() < 1) {
+        String initiative = initiativeEntry.getText().toString();
+        if (TextUtils.isEmpty(initiative) || TextUtils.equals(initiative, "-")) {
             initiativeEntry.setError("Initiative plz");
             valid = false;
         }

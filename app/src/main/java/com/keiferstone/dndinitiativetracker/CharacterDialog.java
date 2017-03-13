@@ -123,9 +123,12 @@ public abstract class CharacterDialog extends DialogFragment {
 
         @Override
         public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+            if ("-".equals(source)) {
+                return source;
+            }
             try {
                 int input = Integer.parseInt(dest.toString() + source.toString());
-                if (isInRange(1, 99, input)) {
+                if (isInRange(-99, 99, input)) {
                     return null;
                 }
             } catch (NumberFormatException e) {

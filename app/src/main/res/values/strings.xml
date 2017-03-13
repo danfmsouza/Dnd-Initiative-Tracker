@@ -18,6 +18,7 @@
     <string name="mode">Mode</string>
     <string name="simple">Simple</string>
     <string name="dm">DM</string>
+    <string name="roll_initiative_confirmation_message">Roll initiative for all characters?</string>
 
     <string-array name="d20">
         <item>1</item>
