@@ -1,10 +1,13 @@
 package com.keiferstone.dndinitiativetracker;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.Collections;
@@ -87,10 +91,9 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
         switch (item.getItemId()) {
             case R.id.action_roll:
-                rollInitiative();
+                confirmRollInitiative();
                 return true;
             case R.id.mode_simple:
                 setMode(MODE_SIMPLE);
@@ -175,6 +178,19 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
             }
         }
         character.setMarked(!alreadyMarked);
+    }
+
+    private void confirmRollInitiative() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.roll_initiative_confirmation_message)
+                .setPositiveButton(R.string.roll, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        rollInitiative();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, null);
+        builder.create().show();
     }
 
     private void rollInitiative() {
