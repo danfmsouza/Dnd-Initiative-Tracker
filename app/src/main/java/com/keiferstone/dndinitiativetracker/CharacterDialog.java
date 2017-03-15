@@ -1,5 +1,6 @@
 package com.keiferstone.dndinitiativetracker;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
@@ -54,14 +55,14 @@ public abstract class CharacterDialog extends DialogFragment {
     protected EditText nameEntry;
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
         try {
-            this.callbacks = (Callbacks) context;
+            this.callbacks = (Callbacks) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement AddCharacterDialog.Callbacks");
+            throw new ClassCastException(activity.toString()
+                    + " must implement CharacterDialog.Callbacks");
         }
     }
 
