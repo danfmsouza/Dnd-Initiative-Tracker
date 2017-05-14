@@ -4,15 +4,20 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,11 +38,12 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
     public static final int MODE_DM = 1;
 
     private int mode;
-
     private CharacterStorage characterStorage;
-    private CharacterAdapter characterAdapter;
     private List<Character> characters;
+
+    private ActionBarDrawerToggle drawerToggle;
     private RecyclerView characterRecycler;
+    private CharacterAdapter characterAdapter;
     private TextView emptyText;
 
     @Override
@@ -50,26 +56,43 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Init data
         mode = Preferences.getMode(this);
-
         characterStorage = new CharacterStorage(this);
         characters = characterStorage.loadAllCharacters();
         sortCharacters();
 
-        characterAdapter = new CharacterAdapter(characters, this, mode);
-
+        // Init views
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        DrawerLayout navigationDrawer = (DrawerLayout) findViewById(R.id.navigation_drawer);
         characterRecycler = (RecyclerView) findViewById(R.id.character_recycler);
+        emptyText = (TextView) findViewById(R.id.empty_text);
+
+        // Setup toolbar
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+        }
+        drawerToggle = new ActionBarDrawerToggle(this, navigationDrawer, R.string.open_drawer, R.string.close_drawer);
+        navigationDrawer.addDrawerListener(drawerToggle);
+
+        // Bind data to views
+        characterAdapter = new CharacterAdapter(characters, this, mode);
         characterRecycler.setLayoutManager(new LinearLayoutManager(this));
         characterRecycler.setAdapter(characterAdapter);
-
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchCallbacks(0, ItemTouchHelper.LEFT));
         itemTouchHelper.attachToRecyclerView(characterRecycler);
-
-        emptyText = (TextView) findViewById(R.id.empty_text);
         emptyText.setVisibility(characters.isEmpty() ? View.VISIBLE : View.GONE);
-
         FloatingActionButton addCharacterButton = (FloatingActionButton) findViewById(R.id.add_character_button);
         addCharacterButton.setOnClickListener(v -> showAddCharacterDialog());
+    }
+
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
     }
 
     @Override
@@ -87,6 +110,9 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
         switch (item.getItemId()) {
             case R.id.action_roll:
                 confirmRollInitiative();
