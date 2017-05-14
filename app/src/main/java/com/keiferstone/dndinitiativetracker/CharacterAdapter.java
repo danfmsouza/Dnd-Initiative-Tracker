@@ -36,23 +36,17 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
     public void onBindViewHolder(final CharacterViewHolder holder, int position) {
         final Character character = getItem(position);
         holder.container.setBackgroundColor(getBackgroundColor(holder.itemView.getContext(), position));
-        holder.container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onCharacterClicked(character, holder.getAdapterPosition());
-                }
+        holder.container.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onCharacterClicked(character, holder.getAdapterPosition());
             }
         });
-        holder.container.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (listener != null) {
-                    listener.onCharacterLongClicked(character, holder.getAdapterPosition());
-                    return true;
-                } else {
-                    return false;
-                }
+        holder.container.setOnLongClickListener(v -> {
+            if (listener != null) {
+                listener.onCharacterLongClicked(character, holder.getAdapterPosition());
+                return true;
+            } else {
+                return false;
             }
         });
         holder.name.setText(character.getName());

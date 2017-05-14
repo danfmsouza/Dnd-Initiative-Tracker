@@ -77,20 +77,13 @@ public abstract class CharacterDialog extends DialogFragment {
                 .setPositiveButton(R.string.save, null)
                 .setNegativeButton(R.string.cancel, null);
         Dialog dialog = builder.create();
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(final DialogInterface dialog) {
-                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-                        if (createCharacter(character)) {
-                            dialog.dismiss();
-                        }
-                    }
-                });
-            }
+        dialog.setOnShowListener(dialog1 -> {
+            Button button = ((AlertDialog) dialog1).getButton(AlertDialog.BUTTON_POSITIVE);
+            button.setOnClickListener(view -> {
+                if (createCharacter(character)) {
+                    dialog1.dismiss();
+                }
+            });
         });
         return dialog;
     }

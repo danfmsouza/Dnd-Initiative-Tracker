@@ -69,12 +69,7 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         emptyText.setVisibility(characters.isEmpty() ? View.VISIBLE : View.GONE);
 
         FloatingActionButton addCharacterButton = (FloatingActionButton) findViewById(R.id.add_character_button);
-        addCharacterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAddCharacterDialog();
-            }
-        });
+        addCharacterButton.setOnClickListener(v -> showAddCharacterDialog());
     }
 
     @Override
@@ -157,16 +152,13 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
     }
 
     private void sortCharacters() {
-        Collections.sort(characters, new Comparator<Character>() {
-            @Override
-            public int compare(Character character1, Character character2) {
-                if (character1.getInitiative() > character2.getInitiative()) {
-                    return -1;
-                } else if (character1.getInitiative() < character2.getInitiative()) {
-                    return 1;
-                } else {
-                    return character1.getName().compareTo(character2.getName());
-                }
+        Collections.sort(characters, (character1, character2) -> {
+            if (character1.getInitiative() > character2.getInitiative()) {
+                return -1;
+            } else if (character1.getInitiative() < character2.getInitiative()) {
+                return 1;
+            } else {
+                return character1.getName().compareTo(character2.getName());
             }
         });
     }
@@ -184,12 +176,7 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
     private void confirmRollInitiative() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.roll_initiative_confirmation_message)
-                .setPositiveButton(R.string.roll, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        rollInitiative();
-                    }
-                })
+                .setPositiveButton(R.string.roll, (dialog, which) -> rollInitiative())
                 .setNegativeButton(R.string.cancel, null);
         builder.create().show();
     }
@@ -202,14 +189,11 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         sortCharacters();
         characterAdapter.notifyDataSetChanged();
         Snackbar.make(characterRecycler, R.string.initiative_rolled, Snackbar.LENGTH_LONG)
-                .setAction(R.string.undo, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        characters.clear();
-                        characters.addAll(characterStorage.loadAllCharacters());
-                        sortCharacters();
-                        characterAdapter.notifyDataSetChanged();
-                    }
+                .setAction(R.string.undo, v -> {
+                    characters.clear();
+                    characters.addAll(characterStorage.loadAllCharacters());
+                    sortCharacters();
+                    characterAdapter.notifyDataSetChanged();
                 })
                 .setActionTextColor(ContextCompat.getColor(MainActivity.this, R.color.white))
                 .show();
@@ -223,15 +207,12 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         characterStorage.deleteCharacter(character);
         characterAdapter.notifyItemRemoved(position);
         Snackbar.make(characterRecycler, R.string.character_removed, Snackbar.LENGTH_LONG)
-                .setAction(R.string.undo, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        characters.add(position, character);
-                        sortCharacters();
-                        characterStorage.saveCharacter(character);
-                        characterAdapter.notifyItemInserted(position);
-                        emptyText.setVisibility(characters.isEmpty() ? View.VISIBLE : View.GONE);
-                    }
+                .setAction(R.string.undo, v -> {
+                    characters.add(position, character);
+                    sortCharacters();
+                    characterStorage.saveCharacter(character);
+                    characterAdapter.notifyItemInserted(position);
+                    emptyText.setVisibility(characters.isEmpty() ? View.VISIBLE : View.GONE);
                 })
                 .setActionTextColor(ContextCompat.getColor(MainActivity.this, R.color.white))
                 .show();
