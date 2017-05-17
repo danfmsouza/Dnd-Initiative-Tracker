@@ -1,4 +1,4 @@
-package com.keiferstone.dndinitiativetracker;
+package com.keiferstone.dndinitiativetracker.data.model;
 
 
 import android.os.Parcel;
@@ -6,14 +6,18 @@ import android.os.Parcelable;
 
 import java.util.UUID;
 
-class Character implements Parcelable {
-    private String id;
+public class Character implements Parcelable {
+    private final String id;
     private String name;
     private int modifier;
     private int d20;
     private boolean marked;
 
-    Character(String name, int modifier, int d20) {
+    public Character(String id) {
+        this.id = id;
+    }
+
+    public Character(String name, int modifier, int d20) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.modifier = modifier;
@@ -33,31 +37,31 @@ class Character implements Parcelable {
         this.name = name;
     }
 
-    int getModifier() {
+    public int getModifier() {
         return modifier;
     }
 
-    void setModifier(int modifier) {
+    public void setModifier(int modifier) {
         this.modifier = modifier;
     }
 
-    int getD20() {
+    public int getD20() {
         return d20;
     }
 
-    void setD20(int d20) {
+    public void setD20(int d20) {
         this.d20 = d20;
     }
 
-    boolean isMarked() {
+    public boolean isMarked() {
         return marked;
     }
 
-    void setMarked(boolean marked) {
+    public void setMarked(boolean marked) {
         this.marked = marked;
     }
 
-    int getInitiative() {
+    public int getInitiative() {
         return getModifier() + getD20();
     }
 

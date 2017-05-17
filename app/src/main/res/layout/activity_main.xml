@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.keiferstone.dndinitiativetracker.MainActivity">
+    tools:context="com.keiferstone.dndinitiativetracker.ui.activity.MainActivity">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -45,20 +45,49 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:src="@drawable/ic_add"
-            android:tint="@android:color/white"
+            android:tint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
     </android.support.constraint.ConstraintLayout>
 
-    <FrameLayout
+    <LinearLayout
         android:layout_height="match_parent"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/navigation_drawer_max_width"
         android:layout_gravity="start"
         android:layout_marginEnd="?attr/actionBarSize"
-        android:maxWidth="@dimen/navigation_drawer_max_width"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:orientation="vertical">
 
-    </FrameLayout>
+        <FrameLayout
+            android:id="@+id/active_party_container"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="?colorPrimary"
+            android:padding="16dp">
+
+            <com.keiferstone.dndinitiativetracker.ui.view.PartyView
+                android:id="@+id/active_party"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                app:allowEmpty="false"
+                app:textColor="@color/white"
+                app:createPartyIconTint="@color/white"/>
+
+        </FrameLayout>
+
+        <com.keiferstone.dndinitiativetracker.ui.view.PartyView
+            android:id="@+id/add_party"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:createPartyIconTint="?colorPrimary"/>
+
+        <ListView
+            android:id="@+id/party_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

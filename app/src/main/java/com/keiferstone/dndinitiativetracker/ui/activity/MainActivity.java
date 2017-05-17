@@ -1,9 +1,8 @@
-package com.keiferstone.dndinitiativetracker;
+package com.keiferstone.dndinitiativetracker.ui.activity;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Canvas;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,7 +13,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -23,25 +21,44 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.keiferstone.dndinitiativetracker.data.PartyManager;
+import com.keiferstone.dndinitiativetracker.data.model.Party;
+import com.keiferstone.dndinitiativetracker.data.model.Character;
+import com.keiferstone.dndinitiativetracker.ui.adapter.CharacterAdapter;
+import com.keiferstone.dndinitiativetracker.R;
+import com.keiferstone.dndinitiativetracker.data.Preferences;
+import com.keiferstone.dndinitiativetracker.ui.dialog.CharacterDialog;
+import com.keiferstone.dndinitiativetracker.ui.dialog.DeletePartyDialog;
+import com.keiferstone.dndinitiativetracker.ui.view.PartyView;
+
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class MainActivity extends AppCompatActivity implements CharacterDialog.Callbacks, CharacterAdapter.OnCharacterClickListener {
+public class MainActivity extends AppCompatActivity implements
+        DeletePartyDialog.OnPartyDeletedListener,
+        CharacterDialog.OnCharacterCreatedListener,
+        CharacterAdapter.OnCharacterClickListener {
     public static final int MODE_SIMPLE = 0;
     public static final int MODE_DM = 1;
 
-    private int mode;
-    private CharacterStorage characterStorage;
-    private List<Character> characters;
+    private Preferences preferences;
+    private List<Party> parties;
+    private Party activeParty;
 
     private ActionBarDrawerToggle drawerToggle;
+    private PartyView activePartyView;
+    private PartyView addPartyView;
+    private ListView partyList;
+    private ArrayAdapter partyAdapter;
     private RecyclerView characterRecycler;
     private CharacterAdapter characterAdapter;
     private TextView emptyText;
@@ -57,14 +74,17 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         setContentView(R.layout.activity_main);
 
         // Init data
-        mode = Preferences.getMode(this);
-        characterStorage = new CharacterStorage(this);
-        characters = characterStorage.loadAllCharacters();
+        preferences = new Preferences(this);
+        parties = PartyManager.getAllParties();
+        activeParty = PartyManager.getActiveParty();
         sortCharacters();
 
         // Init views
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         DrawerLayout navigationDrawer = (DrawerLayout) findViewById(R.id.navigation_drawer);
+        activePartyView = (PartyView) findViewById(R.id.active_party);
+        addPartyView = (PartyView) findViewById(R.id.add_party);
+        partyList = (ListView) findViewById(R.id.party_list);
         characterRecycler = (RecyclerView) findViewById(R.id.character_recycler);
         emptyText = (TextView) findViewById(R.id.empty_text);
 
@@ -79,12 +99,22 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         navigationDrawer.addDrawerListener(drawerToggle);
 
         // Bind data to views
-        characterAdapter = new CharacterAdapter(characters, this, mode);
+        activePartyView.setPartyName(PartyManager.getActiveParty().getName());
+        activePartyView.setOnPartyCreatedListener(this::addOrUpdateParty);
+        addPartyView.setOnPartyCreatedListener(this::addParty);
+        partyList.setOnItemClickListener((parent, view, position, id) -> {
+            navigationDrawer.closeDrawers();
+            setActiveParty((Party) partyAdapter.getItem(position));
+        });
+        partyList.setOnItemLongClickListener((parent, view, position, id) -> {
+            DeletePartyDialog.show(getFragmentManager(), (Party) partyAdapter.getItem(position));
+            return true;
+        });
+        updatePartyAdapter();
         characterRecycler.setLayoutManager(new LinearLayoutManager(this));
-        characterRecycler.setAdapter(characterAdapter);
+        updateCharacterAdapter();
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchCallbacks(0, ItemTouchHelper.LEFT));
         itemTouchHelper.attachToRecyclerView(characterRecycler);
-        emptyText.setVisibility(characters.isEmpty() ? View.VISIBLE : View.GONE);
         FloatingActionButton addCharacterButton = (FloatingActionButton) findViewById(R.id.add_character_button);
         addCharacterButton.setOnClickListener(v -> showAddCharacterDialog());
     }
@@ -104,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.getItem(0).setVisible(mode == MODE_DM);
+        menu.getItem(0).setVisible(preferences.getMode() == MODE_DM);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -129,26 +159,21 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        for (Character character : characters) {
-            characterStorage.saveCharacter(character);
-        }
+    public void onPartyDeleted(Party party) {
+        parties.remove(party);
+        sortParties();
+        setActiveParty(PartyManager.getActiveParty());
+        addOrUpdateParty(activeParty);
+        updatePartyAdapter();
     }
 
     @Override
     public void onCharacterCreated(Character character) {
-        if (characters.contains(character)) {
-            characters.remove(character);
-        }
-
-        characters.add(character);
+        activeParty.addOrUpdateCharacter(character);
         sortCharacters();
-        characterRecycler.getAdapter().notifyDataSetChanged();
-        characterStorage.saveCharacter(character);
-
-        emptyText.setVisibility(characters.isEmpty() ? View.VISIBLE : View.GONE);
+        PartyManager.addOrUpdateParty(activeParty);
+        updateCharacterAdapter();
+        emptyText.setVisibility(activeParty.hasCharacters() ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -163,22 +188,65 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
     }
 
     private void setMode(int mode) {
-        this.mode = mode;
         invalidateOptionsMenu();
         characterAdapter.setMode(mode);
-        Preferences.setMode(this, mode);
+        preferences.setMode(mode);
+    }
+
+    private void addParty(Party party) {
+        addPartyView.setPartyName(null);
+        addOrUpdateParty(party);
+        sortParties();
+        updatePartyAdapter();
+        setActiveParty(party);
+    }
+
+    private void setActiveParty(Party party) {
+        activeParty = party;
+        activePartyView.setPartyName(activeParty.getName());
+        updateCharacterAdapter();
+    }
+
+    private void addOrUpdateParty(Party party) {
+        parties.remove(party);
+        parties.add(party);
+        PartyManager.addOrUpdateParty(party);
+    }
+
+    private void updatePartyAdapter() {
+        partyAdapter = new ArrayAdapter<Party>(
+                this, android.R.layout.simple_list_item_1, PartyManager.getAllParties()) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                TextView textView = (TextView) super.getView(position, convertView, parent);
+                textView.setText(getItem(position).getName());
+                return textView;
+            }
+        };
+        partyList.setAdapter(partyAdapter);
+    }
+
+    private void sortParties() {
+        Collections.sort(parties, (party1, party2) -> party1.getName().compareTo(party2.getName()));
+    }
+
+    private void updateCharacterAdapter() {
+        characterAdapter = new CharacterAdapter(activeParty.getCharacters(), this, preferences.getMode());
+        characterRecycler.setAdapter(characterAdapter);
+        emptyText.setVisibility(activeParty.hasCharacters() ? View.GONE : View.VISIBLE);
     }
 
     private void showAddCharacterDialog() {
-        CharacterDialog.show(getFragmentManager(), mode);
+        CharacterDialog.show(getFragmentManager(), preferences.getMode());
     }
 
     private void showEditCharacterDialog(Character character) {
-        CharacterDialog.show(getFragmentManager(), character, mode);
+        CharacterDialog.show(getFragmentManager(), character, preferences.getMode());
     }
 
     private void sortCharacters() {
-        Collections.sort(characters, (character1, character2) -> {
+        Collections.sort(activeParty.getCharacters(), (character1, character2) -> {
             if (character1.getInitiative() > character2.getInitiative()) {
                 return -1;
             } else if (character1.getInitiative() < character2.getInitiative()) {
@@ -191,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
 
     private void markCharacter(Character character) {
         boolean alreadyMarked = character.isMarked();
-        for (Character c : characters) {
+        for (Character c : activeParty.getCharacters()) {
             if (c.isMarked()) {
                 c.setMarked(false);
             }
@@ -208,16 +276,17 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
     }
 
     private void rollInitiative() {
-        for (Character character : characters) {
-            characterStorage.saveCharacter(character);
+        final Party oldParty = activeParty;
+        for (Character character : activeParty.getCharacters()) {
             character.setD20(rollD20());
         }
         sortCharacters();
+        PartyManager.addOrUpdateParty(activeParty);
         characterAdapter.notifyDataSetChanged();
         Snackbar.make(characterRecycler, R.string.initiative_rolled, Snackbar.LENGTH_LONG)
                 .setAction(R.string.undo, v -> {
-                    characters.clear();
-                    characters.addAll(characterStorage.loadAllCharacters());
+                    activeParty = oldParty;
+                    PartyManager.addOrUpdateParty(activeParty);
                     sortCharacters();
                     characterAdapter.notifyDataSetChanged();
                 })
@@ -230,15 +299,16 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
     }
 
     private void deleteCharacter(final Character character, final int position) {
-        characterStorage.deleteCharacter(character);
+        activeParty.deleteCharacter(character);
+        PartyManager.addOrUpdateParty(activeParty);
         characterAdapter.notifyItemRemoved(position);
         Snackbar.make(characterRecycler, R.string.character_removed, Snackbar.LENGTH_LONG)
                 .setAction(R.string.undo, v -> {
-                    characters.add(position, character);
+                    activeParty.getCharacters().add(position, character);
                     sortCharacters();
-                    characterStorage.saveCharacter(character);
+                    PartyManager.addOrUpdateParty(activeParty);
                     characterAdapter.notifyItemInserted(position);
-                    emptyText.setVisibility(characters.isEmpty() ? View.VISIBLE : View.GONE);
+                    emptyText.setVisibility(activeParty.hasCharacters() ? View.VISIBLE : View.GONE);
                 })
                 .setActionTextColor(ContextCompat.getColor(MainActivity.this, R.color.white))
                 .show();
@@ -257,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
             final int adapterPosition = viewHolder.getAdapterPosition();
-            deleteCharacter(characters.remove(adapterPosition), adapterPosition);
+            deleteCharacter(characterAdapter.getItem(adapterPosition), adapterPosition);
         }
 
         @Override

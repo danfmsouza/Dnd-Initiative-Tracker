@@ -67,6 +67,7 @@ dependencies {
     // Third party libraries
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
     compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.jakewharton.timber:timber:4.5.1'
 
     // Test libraries
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {

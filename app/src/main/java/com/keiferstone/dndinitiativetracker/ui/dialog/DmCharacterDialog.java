@@ -1,4 +1,4 @@
-package com.keiferstone.dndinitiativetracker;
+package com.keiferstone.dndinitiativetracker.ui.dialog;
 
 import android.support.annotation.Nullable;
 import android.text.Editable;
@@ -8,8 +8,12 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import com.keiferstone.dndinitiativetracker.data.model.Character;
+import com.keiferstone.dndinitiativetracker.R;
 
 
 public class DmCharacterDialog extends CharacterDialog {
@@ -81,8 +85,8 @@ public class DmCharacterDialog extends CharacterDialog {
                 character = new Character(getName(), getModifier(), getD20());
             }
 
-            if (callbacks != null) {
-                callbacks.onCharacterCreated(character);
+            if (onCharacterCreatedListener != null) {
+                onCharacterCreatedListener.onCharacterCreated(character);
             }
             return true;
         }

@@ -1,11 +1,9 @@
-package com.keiferstone.dndinitiativetracker;
+package com.keiferstone.dndinitiativetracker.ui.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -14,9 +12,12 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
-import static com.keiferstone.dndinitiativetracker.MainActivity.MODE_SIMPLE;
+import com.keiferstone.dndinitiativetracker.R;
+
+import static com.keiferstone.dndinitiativetracker.ui.activity.MainActivity.MODE_SIMPLE;
 
 public abstract class CharacterDialog extends DialogFragment {
     private static final String TAG = CharacterDialog.class.getSimpleName();
@@ -37,7 +38,7 @@ public abstract class CharacterDialog extends DialogFragment {
         dialog.show(fragmentManager, TAG);
     }
 
-    public static void show(FragmentManager fragmentManager, Character character, int mode) {
+    public static void show(FragmentManager fragmentManager, com.keiferstone.dndinitiativetracker.data.model.Character character, int mode) {
         CharacterDialog dialog;
         if (mode == MODE_SIMPLE) {
             dialog = new SimpleCharacterDialog();
@@ -51,7 +52,7 @@ public abstract class CharacterDialog extends DialogFragment {
         dialog.show(fragmentManager, TAG);
     }
 
-    protected Callbacks callbacks;
+    protected OnCharacterCreatedListener onCharacterCreatedListener;
     protected EditText nameEntry;
 
     @Override
@@ -59,17 +60,17 @@ public abstract class CharacterDialog extends DialogFragment {
         super.onAttach(activity);
 
         try {
-            this.callbacks = (Callbacks) activity;
+            this.onCharacterCreatedListener = (OnCharacterCreatedListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement CharacterDialog.Callbacks");
+                    + " must implement CharacterDialog.OnCharacterCreatedListener");
         }
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Bundle args = getArguments();
-        final Character character = args != null ? (Character) args.getParcelable(ARG_CHARACTER) : null;
+        final com.keiferstone.dndinitiativetracker.data.model.Character character = args != null ? (com.keiferstone.dndinitiativetracker.data.model.Character) args.getParcelable(ARG_CHARACTER) : null;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(character == null ? R.string.add_character : R.string.edit_character)
@@ -88,9 +89,9 @@ public abstract class CharacterDialog extends DialogFragment {
         return dialog;
     }
 
-    protected abstract View getCharacterView(@Nullable Character character);
+    protected abstract View getCharacterView(@Nullable com.keiferstone.dndinitiativetracker.data.model.Character character);
 
-    protected abstract boolean createCharacter(@Nullable Character character);
+    protected abstract boolean createCharacter(@Nullable com.keiferstone.dndinitiativetracker.data.model.Character character);
 
     protected String getName() {
         if (nameEntry != null) {
@@ -136,7 +137,7 @@ public abstract class CharacterDialog extends DialogFragment {
         }
     };
 
-    interface Callbacks {
-        void onCharacterCreated(Character character);
+    public interface OnCharacterCreatedListener {
+        void onCharacterCreated(com.keiferstone.dndinitiativetracker.data.model.Character character);
     }
 }

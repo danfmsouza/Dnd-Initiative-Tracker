@@ -2,6 +2,7 @@
     <string name="app_name">DnD Initiative Tracker</string>
     <string name="open_drawer">Open drawer</string>
     <string name="close_drawer">Close drawer</string>
+    <string name="delete_party">Delete party?</string>
     <string name="name">Name</string>
     <string name="initiative">Init.</string>
     <string name="modifier">Modifier</string>

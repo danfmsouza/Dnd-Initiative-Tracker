@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PartyView">
+        <attr name="allowEmpty" format="boolean"/>
+        <attr name="partyName" format="string"/>
+        <attr name="textColor" format="color"/>
+        <attr name="createPartyIconTint" format="color"/>
+    </declare-styleable>
+</resources>

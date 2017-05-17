@@ -1,4 +1,4 @@
-package com.keiferstone.dndinitiativetracker;
+package com.keiferstone.dndinitiativetracker.ui.adapter;
 
 import android.content.Context;
 import android.support.annotation.ColorInt;
@@ -10,17 +10,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.keiferstone.dndinitiativetracker.data.model.Character;
+import com.keiferstone.dndinitiativetracker.R;
+
 import java.util.List;
 
-import static com.keiferstone.dndinitiativetracker.MainActivity.MODE_SIMPLE;
+import static com.keiferstone.dndinitiativetracker.ui.activity.MainActivity.MODE_SIMPLE;
 
 
-class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterViewHolder> {
+public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterViewHolder> {
     private List<Character> characters;
     private OnCharacterClickListener listener;
     private int mode;
 
-    CharacterAdapter(@NonNull List<Character> characters, OnCharacterClickListener listener, int mode) {
+    public CharacterAdapter(@NonNull List<Character> characters, OnCharacterClickListener listener, int mode) {
         this.characters = characters;
         this.listener = listener;
         this.mode = mode;
@@ -61,12 +64,12 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
         return characters.size();
     }
 
-    void setMode(int mode) {
+    public void setMode(int mode) {
         this.mode = mode;
         notifyDataSetChanged();
     }
 
-    private Character getItem(int position) {
+    public Character getItem(int position) {
         return characters.get(position);
     }
 
@@ -83,7 +86,7 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
         return context.getString(R.string.initiative_breakdown, character.getD20(), character.getModifier());
     }
 
-    class CharacterViewHolder extends RecyclerView.ViewHolder {
+    public class CharacterViewHolder extends RecyclerView.ViewHolder {
         View deleteIcon;
         View container;
         TextView name;
@@ -101,12 +104,12 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
             marker = itemView.findViewById(R.id.marker);
         }
 
-        View getSwipeableView() {
+        public View getSwipeableView() {
             return container;
         }
     }
 
-    interface OnCharacterClickListener {
+    public interface OnCharacterClickListener {
         void onCharacterClicked(Character character, int position);
         void onCharacterLongClicked(Character character, int position);
     }
