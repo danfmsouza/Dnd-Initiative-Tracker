@@ -12,8 +12,8 @@ project.ext {
 
 // Manifest version information major.minor.patch.hotfix
 def versionMajor = 1  // Must be in [0, 99]
-def versionMinor = 1  // Must be in [0, 99]
-def versionPatch = 4  // Must be in [0, 99]
+def versionMinor = 2  // Must be in [0, 99]
+def versionPatch = 0  // Must be in [0, 99]
 def versionHotfix = 0 // Must be in [0, 9]
 
 android {
