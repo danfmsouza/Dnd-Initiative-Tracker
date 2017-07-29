@@ -12,13 +12,19 @@ project.ext {
 
 // Manifest version information major.minor.patch.hotfix
 def versionMajor = 1  // Must be in [0, 99]
-def versionMinor = 1  // Must be in [0, 99]
-def versionPatch = 4  // Must be in [0, 99]
+def versionMinor = 2  // Must be in [0, 99]
+def versionPatch = 0  // Must be in [0, 99]
 def versionHotfix = 0 // Must be in [0, 9]
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
+
+    compileOptions {
+        // Target Java 8
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     defaultConfig {
         applicationId "com.keiferstone.dndinitiativetracker"
@@ -55,17 +61,17 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     // Android support libraries
-    compile 'com.android.support:appcompat-v7:25.2.0'
-    compile 'com.android.support:design:25.2.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
 
     // Third party libraries
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
-    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.google.code.gson:gson:2.8.1'
 
     // Test libraries
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testCompile 'junit:junit:4.12'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }

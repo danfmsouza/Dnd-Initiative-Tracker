@@ -13,11 +13,11 @@ class Character implements Parcelable {
     private int d20;
     private boolean marked;
 
-    Character(String name, int modifier, int d20) {
+    Character(String name, int modifier) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
         this.modifier = modifier;
-        this.d20 = d20;
+        this.d20 = 1;
         this.marked = false;
     }
 

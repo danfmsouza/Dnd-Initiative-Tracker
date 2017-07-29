@@ -12,18 +12,14 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import static com.keiferstone.dndinitiativetracker.MainActivity.MODE_SIMPLE;
-
 
 class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterViewHolder> {
     private List<Character> characters;
     private OnCharacterClickListener listener;
-    private int mode;
 
-    CharacterAdapter(@NonNull List<Character> characters, OnCharacterClickListener listener, int mode) {
+    CharacterAdapter(@NonNull List<Character> characters, OnCharacterClickListener listener) {
         this.characters = characters;
         this.listener = listener;
-        this.mode = mode;
     }
 
     @Override
@@ -36,28 +32,21 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
     public void onBindViewHolder(final CharacterViewHolder holder, int position) {
         final Character character = getItem(position);
         holder.container.setBackgroundColor(getBackgroundColor(holder.itemView.getContext(), position));
-        holder.container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onCharacterClicked(character, holder.getAdapterPosition());
-                }
+        holder.container.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onCharacterClicked(character, holder.getAdapterPosition());
             }
         });
-        holder.container.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (listener != null) {
-                    listener.onCharacterLongClicked(character, holder.getAdapterPosition());
-                    return true;
-                } else {
-                    return false;
-                }
+        holder.container.setOnLongClickListener(v -> {
+            if (listener != null) {
+                listener.onCharacterLongClicked(character, holder.getAdapterPosition());
+                return true;
+            } else {
+                return false;
             }
         });
         holder.name.setText(character.getName());
         holder.initiative.setText(String.valueOf(character.getInitiative()));
-        holder.initiativeBreakdown.setVisibility(mode == MODE_SIMPLE ? View.GONE : View.VISIBLE);
         holder.initiativeBreakdown.setText(getInitiativeBreakdown(holder.itemView.getContext(), character));
         holder.marker.setVisibility(character.isMarked() ? View.VISIBLE : View.INVISIBLE);
     }
@@ -65,11 +54,6 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
     @Override
     public int getItemCount() {
         return characters.size();
-    }
-
-    void setMode(int mode) {
-        this.mode = mode;
-        notifyDataSetChanged();
     }
 
     private Character getItem(int position) {

@@ -7,22 +7,4 @@
         android:title="@string/roll"
         android:icon="@drawable/ic_die"
         app:showAsAction="ifRoom"/>
-
-    <item
-        android:id="@+id/action_mode"
-        android:title="@string/mode"
-        app:showAsAction="never">
-
-        <menu>
-            <item
-                android:id="@+id/mode_simple"
-                android:title="@string/simple"
-                app:showAsAction="never"/>
-
-            <item
-                android:id="@+id/mode_dm"
-                android:title="@string/dm"
-                app:showAsAction="never"/>
-        </menu>
-    </item>
 </menu>
