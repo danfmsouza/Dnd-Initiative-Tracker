@@ -4,9 +4,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -16,16 +15,18 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 
 
 public class CharacterDialog extends DialogFragment {
     private static final String TAG = CharacterDialog.class.getSimpleName();
 
     protected static final String ARG_CHARACTER = "characterArg";
+
+    private Callbacks callbacks;
+    private EditText nameEntry;
+    private EditText modifierEntry;
 
     public static void show(FragmentManager fragmentManager) {
         CharacterDialog dialog = new CharacterDialog();
@@ -42,15 +43,9 @@ public class CharacterDialog extends DialogFragment {
         dialog.show(fragmentManager, TAG);
     }
 
-    private Callbacks callbacks;
-    private EditText nameEntry;
-    private EditText modifierEntry;
-    private Spinner d20Spinner;
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
         try {
             this.callbacks = (Callbacks) activity;
         } catch (ClassCastException e) {
@@ -66,43 +61,44 @@ public class CharacterDialog extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(character == null ? R.string.add_character : R.string.edit_character)
-                .setView(getCharacterView(character))
+                .setView(createView(character))
                 .setPositiveButton(R.string.save, null)
                 .setNegativeButton(R.string.cancel, null);
+        if (character != null) {
+            builder.setNeutralButton(R.string.delete, null);
+        }
         Dialog dialog = builder.create();
-        dialog.setOnShowListener(dialog1 -> {
-            Button button = ((AlertDialog) dialog1).getButton(AlertDialog.BUTTON_POSITIVE);
-            button.setOnClickListener(view -> {
+        dialog.setOnShowListener(d -> {
+            Button saveButton = ((AlertDialog) d).getButton(AlertDialog.BUTTON_POSITIVE);
+            saveButton.setOnClickListener(view -> {
                 if (createCharacter(character)) {
-                    dialog1.dismiss();
+                    d.dismiss();
                 }
+            });
+            Button deleteButton = ((AlertDialog) d).getButton(AlertDialog.BUTTON_NEUTRAL);
+            deleteButton.setOnClickListener(view -> {
+                if (character != null) {
+                    deleteCharacter(character);
+                }
+                d.dismiss();
             });
         });
         return dialog;
     }
 
-    private View getCharacterView(@Nullable Character character) {
+    private View createView(@Nullable Character character) {
         View view = getActivity().getLayoutInflater().inflate(
-                R.layout.dialog_character_dm, (ViewGroup) getView(), false);
+                R.layout.dialog_character, (ViewGroup) getView(), false);
 
         nameEntry = (EditText) view.findViewById(R.id.name_entry);
         nameEntry.addTextChangedListener(clearErrorTextWatcher);
 
         modifierEntry = (EditText) view.findViewById(R.id.modifier_entry);
-        modifierEntry.setFilters(new InputFilter[]{initiativeFilter});
-
-        d20Spinner = (Spinner) view.findViewById(R.id.d20_spinner);
-        ArrayAdapter<CharSequence> d20Adapter = ArrayAdapter.createFromResource(getActivity(), R.array.d20, R.layout.spinner_item);
-        d20Adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-        d20Spinner.setAdapter(d20Adapter);
+        modifierEntry.setFilters(new InputFilter[]{modifierFilter});
 
         if (character != null) {
             nameEntry.setText(character.getName());
             modifierEntry.setText(String.valueOf(character.getModifier()));
-            int d20 = character.getD20();
-            d20 = d20 < 1 ? 1 : d20;
-            d20 = d20 > 20 ? 20 : d20;
-            d20Spinner.setSelection(d20 - 1);
         }
         return view;
     }
@@ -122,26 +118,13 @@ public class CharacterDialog extends DialogFragment {
         return 0;
     }
 
-    private int getD20() {
-        if (d20Spinner != null) {
-            try {
-                return Integer.parseInt((String) d20Spinner.getSelectedItem());
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return 1;
-    }
-
     private boolean createCharacter(@Nullable Character character) {
         if (validateInputs()) {
             if (character != null) {
                 character.setName(getName());
                 character.setModifier(getModifier());
-                character.setD20(getD20());
             } else {
-                character = new Character(getName(), getModifier(), getD20());
+                character = new Character(getName(), getModifier());
             }
 
             if (callbacks != null) {
@@ -151,6 +134,12 @@ public class CharacterDialog extends DialogFragment {
         }
 
         return false;
+    }
+
+    private void deleteCharacter(@NonNull Character character) {
+        if (callbacks != null) {
+            callbacks.onCharacterDeleted(character);
+        }
     }
 
     protected String getName() {
@@ -187,7 +176,7 @@ public class CharacterDialog extends DialogFragment {
         }
     };
 
-    protected InputFilter initiativeFilter = new InputFilter() {
+    protected InputFilter modifierFilter = new InputFilter() {
         @Override
         public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
             if ("-".equals(source)) {
@@ -211,5 +200,6 @@ public class CharacterDialog extends DialogFragment {
 
     interface Callbacks {
         void onCharacterCreated(Character character);
+        void onCharacterDeleted(Character character);
     }
 }

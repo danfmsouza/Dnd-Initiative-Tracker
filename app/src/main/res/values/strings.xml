@@ -4,7 +4,7 @@
     <string name="close_drawer">Close drawer</string>
     <string name="name">Name</string>
     <string name="initiative">Init.</string>
-    <string name="modifier">Modifier</string>
+    <string name="modifier">Mod</string>
     <string name="add_character">Add Character</string>
     <string name="edit_character">Edit Character</string>
     <string name="save">Save</string>
@@ -15,6 +15,7 @@
     <string name="marker">Marker</string>
     <string name="no_characters">No Characters</string>
     <string name="roll">Roll</string>
+    <string name="roll_initiative">Roll Initiative</string>
     <string name="initiative_rolled">Initiative rolled</string>
     <string name="initiative_breakdown">%1$d(+%2$d)</string>
     <string name="mode">Mode</string>
