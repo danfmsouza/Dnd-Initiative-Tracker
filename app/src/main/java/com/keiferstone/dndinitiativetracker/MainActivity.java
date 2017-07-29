@@ -34,10 +34,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends AppCompatActivity implements CharacterDialog.Callbacks, CharacterAdapter.OnCharacterClickListener {
-    public static final int MODE_SIMPLE = 0;
-    public static final int MODE_DM = 1;
-
-    private int mode;
     private CharacterStorage characterStorage;
     private List<Character> characters;
 
@@ -57,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         setContentView(R.layout.activity_main);
 
         // Init data
-        mode = Preferences.getMode(this);
         characterStorage = new CharacterStorage(this);
         characters = characterStorage.loadAllCharacters();
         sortCharacters();
@@ -79,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         navigationDrawer.addDrawerListener(drawerToggle);
 
         // Bind data to views
-        characterAdapter = new CharacterAdapter(characters, this, mode);
+        characterAdapter = new CharacterAdapter(characters, this);
         characterRecycler.setLayoutManager(new LinearLayoutManager(this));
         characterRecycler.setAdapter(characterAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchCallbacks(0, ItemTouchHelper.LEFT));
@@ -103,12 +98,6 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.getItem(0).setVisible(mode == MODE_DM);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
@@ -116,12 +105,6 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         switch (item.getItemId()) {
             case R.id.action_roll:
                 confirmRollInitiative();
-                return true;
-            case R.id.mode_simple:
-                setMode(MODE_SIMPLE);
-                return true;
-            case R.id.mode_dm:
-                setMode(MODE_DM);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -162,19 +145,12 @@ public class MainActivity extends AppCompatActivity implements CharacterDialog.C
         showEditCharacterDialog(character);
     }
 
-    private void setMode(int mode) {
-        this.mode = mode;
-        invalidateOptionsMenu();
-        characterAdapter.setMode(mode);
-        Preferences.setMode(this, mode);
-    }
-
     private void showAddCharacterDialog() {
-        CharacterDialog.show(getFragmentManager(), mode);
+        CharacterDialog.show(getFragmentManager());
     }
 
     private void showEditCharacterDialog(Character character) {
-        CharacterDialog.show(getFragmentManager(), character, mode);
+        CharacterDialog.show(getFragmentManager(), character);
     }
 
     private void sortCharacters() {
