@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class RollInitiativeDialog extends DialogFragment {
@@ -27,7 +28,8 @@ public class RollInitiativeDialog extends DialogFragment {
 
     private static final String ARG_CHARACTERS = "charactersArg";
 
-    private List<Character> characters;
+    private RollInitiativeAdapter adapter;
+    private List<Character> characters = new ArrayList<>();
     private Callbacks callbacks;
 
     public static void show(FragmentManager fragmentManager, @NonNull ArrayList<Character> characters) {
@@ -52,7 +54,12 @@ public class RollInitiativeDialog extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        characters = getArguments().getParcelableArrayList(ARG_CHARACTERS);
+        List<Character> characters = getArguments().getParcelableArrayList(ARG_CHARACTERS);
+        if (characters != null) {
+            for (Character character : characters) {
+                this.characters.add(new Character(character));
+            }
+        }
     }
 
     @Override
@@ -61,18 +68,19 @@ public class RollInitiativeDialog extends DialogFragment {
         builder.setTitle(R.string.roll_initiative)
                 .setView(createView())
                 .setPositiveButton(R.string.save, null)
-                .setNegativeButton(R.string.cancel, null);
+                .setNegativeButton(R.string.cancel, null)
+                .setNeutralButton(R.string.roll, null);
         Dialog dialog = builder.create();
         dialog.setOnShowListener(d -> {
             Button saveButton = ((AlertDialog) d).getButton(AlertDialog.BUTTON_POSITIVE);
             saveButton.setOnClickListener(view -> {
                 if (callbacks != null) {
-                    callbacks.onInitiativeRolled();
+                    callbacks.onInitiativeRolled(characters);
                 }
                 d.dismiss();
             });
-            Button deleteButton = ((AlertDialog) d).getButton(AlertDialog.BUTTON_NEUTRAL);
-            deleteButton.setOnClickListener(view -> d.dismiss());
+            Button rollButton = ((AlertDialog) d).getButton(AlertDialog.BUTTON_NEUTRAL);
+            rollButton.setOnClickListener(view -> rollInitiatives());
         });
         return dialog;
     }
@@ -80,10 +88,18 @@ public class RollInitiativeDialog extends DialogFragment {
     private View createView() {
         View view = getActivity().getLayoutInflater().inflate(
                 R.layout.dialog_roll_initiative, (ViewGroup) getView(), false);
-        RecyclerView recycler = (RecyclerView) view.findViewById(R.id.roll_initiative_recycler);
+        RecyclerView recycler = view.findViewById(R.id.roll_initiative_recycler);
         recycler.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        recycler.setAdapter(new RollInitiativeAdapter(characters));
+        adapter = new RollInitiativeAdapter(characters);
+        recycler.setAdapter(adapter);
         return view;
+    }
+
+    private void rollInitiatives() {
+        for (Character character : characters) {
+            character.setD20(ThreadLocalRandom.current().nextInt(1, 21));
+        }
+        adapter.notifyDataSetChanged();
     }
 
     private class RollInitiativeAdapter extends RecyclerView.Adapter<RollInitiativeAdapter.RollInitiativeViewHolder> {
@@ -139,8 +155,8 @@ public class RollInitiativeDialog extends DialogFragment {
 
             RollInitiativeViewHolder(View itemView) {
                 super(itemView);
-                name = (TextView) itemView.findViewById(R.id.name);
-                initiative = (Spinner) itemView.findViewById(R.id.initiative);
+                name = itemView.findViewById(R.id.name);
+                initiative = itemView.findViewById(R.id.initiative);
             }
 
             int getD20() {
@@ -156,6 +172,6 @@ public class RollInitiativeDialog extends DialogFragment {
     }
 
     interface Callbacks {
-        void onInitiativeRolled();
+        void onInitiativeRolled(List<Character> characters);
     }
 }

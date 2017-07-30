@@ -61,9 +61,9 @@ public class MainActivity extends AppCompatActivity implements
         sortCharacters();
 
         // Init views
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        characterRecycler = (RecyclerView) findViewById(R.id.character_recycler);
-        emptyText = (TextView) findViewById(R.id.empty_text);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        characterRecycler = findViewById(R.id.character_recycler);
+        emptyText = findViewById(R.id.empty_text);
 
         // Setup toolbar
         setSupportActionBar(toolbar);
@@ -72,10 +72,8 @@ public class MainActivity extends AppCompatActivity implements
         characterAdapter = new CharacterAdapter(characters, this);
         characterRecycler.setLayoutManager(new LinearLayoutManager(this));
         characterRecycler.setAdapter(characterAdapter);
-        //ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchCallbacks(0, ItemTouchHelper.LEFT));
-        //itemTouchHelper.attachToRecyclerView(characterRecycler);
         emptyText.setVisibility(characters.isEmpty() ? View.VISIBLE : View.GONE);
-        FloatingActionButton addCharacterButton = (FloatingActionButton) findViewById(R.id.add_character_button);
+        FloatingActionButton addCharacterButton = findViewById(R.id.add_character_button);
         addCharacterButton.setOnClickListener(v -> showAddCharacterDialog());
     }
 
@@ -106,7 +104,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onInitiativeRolled() {
+    public void onInitiativeRolled(List<Character> characters) {
+        this.characters.clear();
+        this.characters.addAll(characters);
         sortCharacters();
         characterAdapter.notifyDataSetChanged();
     }
@@ -185,32 +185,5 @@ public class MainActivity extends AppCompatActivity implements
                 })
                 .setActionTextColor(ContextCompat.getColor(MainActivity.this, R.color.white))
                 .show();
-    }
-
-    private class ItemTouchCallbacks extends ItemTouchHelper.SimpleCallback {
-        ItemTouchCallbacks(int dragDirs, int swipeDirs) {
-            super(dragDirs, swipeDirs);
-        }
-
-        @Override
-        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-            return false;
-        }
-
-        @Override
-        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-            final int adapterPosition = viewHolder.getAdapterPosition();
-            deleteCharacter(characters.remove(adapterPosition), adapterPosition);
-        }
-
-        @Override
-        public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-            getDefaultUIUtil().clearView(((CharacterAdapter.CharacterViewHolder) viewHolder).getSwipeableView());
-        }
-
-        @Override
-        public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-            getDefaultUIUtil().onDraw(c, recyclerView, ((CharacterAdapter.CharacterViewHolder) viewHolder).getSwipeableView(), dX, dY, actionState, isCurrentlyActive);
-        }
     }
 }

@@ -90,10 +90,10 @@ public class CharacterDialog extends DialogFragment {
         View view = getActivity().getLayoutInflater().inflate(
                 R.layout.dialog_character, (ViewGroup) getView(), false);
 
-        nameEntry = (EditText) view.findViewById(R.id.name_entry);
+        nameEntry = view.findViewById(R.id.name_entry);
         nameEntry.addTextChangedListener(clearErrorTextWatcher);
 
-        modifierEntry = (EditText) view.findViewById(R.id.modifier_entry);
+        modifierEntry = view.findViewById(R.id.modifier_entry);
         modifierEntry.setFilters(new InputFilter[]{modifierFilter});
 
         if (character != null) {
