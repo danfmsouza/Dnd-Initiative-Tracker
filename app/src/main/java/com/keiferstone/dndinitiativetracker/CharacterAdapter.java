@@ -31,7 +31,6 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
     @Override
     public void onBindViewHolder(final CharacterViewHolder holder, int position) {
         final Character character = getItem(position);
-        holder.container.setBackgroundColor(getBackgroundColor(holder.itemView.getContext(), position));
         holder.container.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onCharacterClicked(character, holder.getAdapterPosition());
@@ -45,6 +44,7 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
                 return false;
             }
         });
+        holder.background.setBackgroundColor(getBackgroundColor(holder.itemView.getContext(), position));
         holder.name.setText(character.getName());
         holder.initiative.setText(String.valueOf(character.getInitiative()));
         holder.initiativeBreakdown.setText(getInitiativeBreakdown(holder.itemView.getContext(), character));
@@ -76,6 +76,7 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
     class CharacterViewHolder extends RecyclerView.ViewHolder {
         View deleteIcon;
         View container;
+        View background;
         TextView name;
         TextView initiative;
         TextView initiativeBreakdown;
@@ -85,6 +86,7 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
             super(itemView);
             deleteIcon = itemView.findViewById(R.id.delete_icon);
             container = itemView.findViewById(R.id.character_container);
+            background = itemView.findViewById(R.id.background);
             name = itemView.findViewById(R.id.name);
             initiative = itemView.findViewById(R.id.initiative);
             initiativeBreakdown = itemView.findViewById(R.id.initiative_breakdown);

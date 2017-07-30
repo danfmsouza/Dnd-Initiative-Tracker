@@ -133,7 +133,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onCharacterClicked(Character character, int position) {
         markCharacter(character);
-        characterAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -166,9 +165,11 @@ public class MainActivity extends AppCompatActivity implements
         for (Character c : characters) {
             if (c.isMarked()) {
                 c.setMarked(false);
+                characterAdapter.notifyItemChanged(characters.indexOf(c));
             }
         }
         character.setMarked(!alreadyMarked);
+        characterAdapter.notifyItemChanged(characters.indexOf(character));
     }
 
     private void deleteCharacter(final Character character, final int position) {

@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/red">
+    android:background="@color/red"
+    android:clickable="true"
+    android:focusable="true">
 
     <ImageView
         android:id="@+id/delete_icon"
@@ -17,6 +19,11 @@
         android:layout_gravity="center_vertical|end"
         android:contentDescription="@string/delete"/>
 
+    <View
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <RelativeLayout
         android:id="@+id/character_container"
         android:layout_width="match_parent"
@@ -25,7 +32,8 @@
         android:paddingEnd="16dp"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:elevation="4dp">
+        android:elevation="4dp"
+        android:background="?selectableItemBackground">
 
         <LinearLayout
             android:id="@+id/initiative_container"

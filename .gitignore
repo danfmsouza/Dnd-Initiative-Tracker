@@ -19,6 +19,7 @@ keystore.properties
 .idea
 .gradle
 build/
+release/
 *.apk
 
 # Don't ignore run configurations
