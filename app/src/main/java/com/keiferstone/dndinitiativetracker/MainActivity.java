@@ -104,7 +104,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onInitiativeRolled() {
+    public void onInitiativeRolled(List<Character> characters) {
+        this.characters.clear();
+        this.characters.addAll(characters);
         sortCharacters();
         characterAdapter.notifyDataSetChanged();
     }

@@ -12,6 +12,12 @@ data class Character(
     var isMarked: Boolean = false
     val initiative: Int get() = modifier + d20
 
+    constructor(character: Character): this(character.name, character.modifier) {
+        this.id = character.id
+        this.d20 = character.d20
+        this.isMarked = character.isMarked
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Character) return false
@@ -31,7 +37,7 @@ data class Character(
         dest.writeInt(if (this.isMarked) 1 else 0)
     }
 
-    private constructor(parcelIn: Parcel) : this(
+    private constructor(parcelIn: Parcel): this(
             parcelIn.readString(), parcelIn.readInt()) {
         id = parcelIn.readString()
         d20 = parcelIn.readInt()
