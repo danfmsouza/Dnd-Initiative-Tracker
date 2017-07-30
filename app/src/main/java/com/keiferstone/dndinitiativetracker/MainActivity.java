@@ -61,9 +61,9 @@ public class MainActivity extends AppCompatActivity implements
         sortCharacters();
 
         // Init views
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        characterRecycler = (RecyclerView) findViewById(R.id.character_recycler);
-        emptyText = (TextView) findViewById(R.id.empty_text);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        characterRecycler = findViewById(R.id.character_recycler);
+        emptyText = findViewById(R.id.empty_text);
 
         // Setup toolbar
         setSupportActionBar(toolbar);
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements
         characterRecycler.setLayoutManager(new LinearLayoutManager(this));
         characterRecycler.setAdapter(characterAdapter);
         emptyText.setVisibility(characters.isEmpty() ? View.VISIBLE : View.GONE);
-        FloatingActionButton addCharacterButton = (FloatingActionButton) findViewById(R.id.add_character_button);
+        FloatingActionButton addCharacterButton = findViewById(R.id.add_character_button);
         addCharacterButton.setOnClickListener(v -> showAddCharacterDialog());
     }
 

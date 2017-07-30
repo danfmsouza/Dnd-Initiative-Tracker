@@ -85,14 +85,10 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
             super(itemView);
             deleteIcon = itemView.findViewById(R.id.delete_icon);
             container = itemView.findViewById(R.id.character_container);
-            name = (TextView) itemView.findViewById(R.id.name);
-            initiative = (TextView) itemView.findViewById(R.id.initiative);
-            initiativeBreakdown = (TextView) itemView.findViewById(R.id.initiative_breakdown);
+            name = itemView.findViewById(R.id.name);
+            initiative = itemView.findViewById(R.id.initiative);
+            initiativeBreakdown = itemView.findViewById(R.id.initiative_breakdown);
             marker = itemView.findViewById(R.id.marker);
-        }
-
-        View getSwipeableView() {
-            return container;
         }
     }
 

@@ -80,7 +80,7 @@ public class RollInitiativeDialog extends DialogFragment {
     private View createView() {
         View view = getActivity().getLayoutInflater().inflate(
                 R.layout.dialog_roll_initiative, (ViewGroup) getView(), false);
-        RecyclerView recycler = (RecyclerView) view.findViewById(R.id.roll_initiative_recycler);
+        RecyclerView recycler = view.findViewById(R.id.roll_initiative_recycler);
         recycler.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recycler.setAdapter(new RollInitiativeAdapter(characters));
         return view;
@@ -139,8 +139,8 @@ public class RollInitiativeDialog extends DialogFragment {
 
             RollInitiativeViewHolder(View itemView) {
                 super(itemView);
-                name = (TextView) itemView.findViewById(R.id.name);
-                initiative = (Spinner) itemView.findViewById(R.id.initiative);
+                name = itemView.findViewById(R.id.name);
+                initiative = itemView.findViewById(R.id.initiative);
             }
 
             int getD20() {
