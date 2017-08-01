@@ -6,21 +6,33 @@
     android:orientation="horizontal"
     android:padding="16dp">
 
-    <EditText
-        android:id="@+id/name_entry"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:hint="@string/name"
-        android:inputType="textCapWords|textNoSuggestions"
-        android:nextFocusDown="@+id/modifier_entry"/>
+        android:layout_weight="1">
 
-    <EditText
-        android:id="@id/modifier_entry"
-        android:layout_width="wrap_content"
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/name_entry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/name"
+            android:inputType="textCapWords|textNoSuggestions"
+            android:nextFocusDown="@+id/modifier_entry"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="48dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:hint="@string/modifier"
-        android:inputType="numberSigned"/>
+        android:layout_marginStart="8dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@id/modifier_entry"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/modifier"
+            android:inputType="numberSigned"/>
+
+    </android.support.design.widget.TextInputLayout>
 
 </LinearLayout>
