@@ -47,6 +47,7 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
         holder.name.setText(character.getName());
         holder.initiative.setText(String.valueOf(character.getInitiative()));
         holder.initiativeBreakdown.setText(getInitiativeBreakdown(holder.itemView.getContext(), character));
+        holder.initiativeBreakdown.setVisibility(character.getModifier() == 0 ? View.INVISIBLE : View.VISIBLE);
         holder.marker.setVisibility(character.isMarked() ? View.VISIBLE : View.INVISIBLE);
         holder.selectedOverlay.setVisibility(character.isSelected() ? View.VISIBLE : View.GONE);
     }
@@ -70,7 +71,10 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
     }
 
     private String getInitiativeBreakdown(Context context, Character character) {
-        return context.getString(R.string.initiative_breakdown, character.getD20(), character.getModifier());
+        return context.getString(R.string.initiative_breakdown,
+                character.getD20(),
+                character.getModifier() >= 0 ? "+" : "",
+                character.getModifier());
     }
 
     class CharacterViewHolder extends RecyclerView.ViewHolder {

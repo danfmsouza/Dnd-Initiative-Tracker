@@ -20,7 +20,7 @@
     <string name="roll">Roll</string>
     <string name="roll_initiative">Roll Initiative</string>
     <string name="initiative_rolled">Initiative rolled</string>
-    <string name="initiative_breakdown">%1$d(+%2$d)</string>
+    <string name="initiative_breakdown">%1$d(%2$s%3$d)</string>
     <string name="mode">Mode</string>
     <string name="simple">Simple</string>
     <string name="dm">DM</string>
