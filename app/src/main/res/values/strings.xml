@@ -7,21 +7,25 @@
     <string name="modifier">Mod</string>
     <string name="add_character">Add Character</string>
     <string name="edit_character">Edit Character</string>
+    <string name="delete_character">Delete Character</string>
+    <string name="delete_character_message">Are you sure you want to delete %1$s?</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="character_removed">Character removed</string>
     <string name="undo">Undo</string>
     <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
     <string name="marker">Marker</string>
     <string name="no_characters">No Characters</string>
     <string name="roll">Roll</string>
     <string name="roll_initiative">Roll Initiative</string>
     <string name="initiative_rolled">Initiative rolled</string>
-    <string name="initiative_breakdown">%1$d(+%2$d)</string>
+    <string name="initiative_breakdown">%1$d(%2$s%3$d)</string>
     <string name="mode">Mode</string>
     <string name="simple">Simple</string>
     <string name="dm">DM</string>
     <string name="roll_initiative_confirmation_message">Roll initiative for all characters?</string>
+    <string name="revive">Revive</string>
 
     <string-array name="d20">
         <item>1</item>

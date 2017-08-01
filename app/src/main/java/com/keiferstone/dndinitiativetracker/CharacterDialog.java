@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -64,9 +63,6 @@ public class CharacterDialog extends DialogFragment {
                 .setView(createView(character))
                 .setPositiveButton(R.string.save, null)
                 .setNegativeButton(R.string.cancel, null);
-        if (character != null) {
-            builder.setNeutralButton(R.string.delete, null);
-        }
         Dialog dialog = builder.create();
         dialog.setOnShowListener(d -> {
             Button saveButton = ((AlertDialog) d).getButton(AlertDialog.BUTTON_POSITIVE);
@@ -74,13 +70,6 @@ public class CharacterDialog extends DialogFragment {
                 if (createCharacter(character)) {
                     d.dismiss();
                 }
-            });
-            Button deleteButton = ((AlertDialog) d).getButton(AlertDialog.BUTTON_NEUTRAL);
-            deleteButton.setOnClickListener(view -> {
-                if (character != null) {
-                    deleteCharacter(character);
-                }
-                d.dismiss();
             });
         });
         return dialog;
@@ -128,18 +117,12 @@ public class CharacterDialog extends DialogFragment {
             }
 
             if (callbacks != null) {
-                callbacks.onCharacterCreated(character);
+                callbacks.onCharacterSaved(character);
             }
             return true;
         }
 
         return false;
-    }
-
-    private void deleteCharacter(@NonNull Character character) {
-        if (callbacks != null) {
-            callbacks.onCharacterDeleted(character);
-        }
     }
 
     protected String getName() {
@@ -199,7 +182,6 @@ public class CharacterDialog extends DialogFragment {
     };
 
     interface Callbacks {
-        void onCharacterCreated(Character character);
-        void onCharacterDeleted(Character character);
+        void onCharacterSaved(Character character);
     }
 }

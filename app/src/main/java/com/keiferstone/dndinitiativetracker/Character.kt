@@ -10,12 +10,16 @@ data class Character(
     var id: String = UUID.randomUUID().toString()
     var d20: Int = 1
     var isMarked: Boolean = false
+    var isDead: Boolean = false
+    var isSelected: Boolean = false
     val initiative: Int get() = modifier + d20
 
     constructor(character: Character): this(character.name, character.modifier) {
         this.id = character.id
         this.d20 = character.d20
         this.isMarked = character.isMarked
+        this.isDead = character.isDead
+        this.isSelected = character.isSelected
     }
 
     override fun equals(other: Any?): Boolean {
@@ -35,6 +39,8 @@ data class Character(
         dest.writeString(this.id)
         dest.writeInt(this.d20)
         dest.writeInt(if (this.isMarked) 1 else 0)
+        dest.writeInt(if (this.isDead) 1 else 0)
+        dest.writeInt(if (this.isSelected) 1 else 0)
     }
 
     private constructor(parcelIn: Parcel): this(
@@ -42,6 +48,8 @@ data class Character(
         id = parcelIn.readString()
         d20 = parcelIn.readInt()
         isMarked = parcelIn.readInt() != 0
+        isDead = parcelIn.readInt() != 0
+        isSelected = parcelIn.readInt() != 0
     }
 
     companion object {

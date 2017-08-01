@@ -31,7 +31,6 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
     @Override
     public void onBindViewHolder(final CharacterViewHolder holder, int position) {
         final Character character = getItem(position);
-        holder.container.setBackgroundColor(getBackgroundColor(holder.itemView.getContext(), position));
         holder.container.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onCharacterClicked(character, holder.getAdapterPosition());
@@ -40,15 +39,17 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
         holder.container.setOnLongClickListener(v -> {
             if (listener != null) {
                 listener.onCharacterLongClicked(character, holder.getAdapterPosition());
-                return true;
-            } else {
-                return false;
             }
+            return true;
         });
+        holder.background.setBackgroundColor(getBackgroundColor(holder.itemView.getContext(), position));
+        holder.background.setVisibility(character.isDead() ? View.GONE : View.VISIBLE);
         holder.name.setText(character.getName());
         holder.initiative.setText(String.valueOf(character.getInitiative()));
         holder.initiativeBreakdown.setText(getInitiativeBreakdown(holder.itemView.getContext(), character));
+        holder.initiativeBreakdown.setVisibility(character.getModifier() == 0 ? View.INVISIBLE : View.VISIBLE);
         holder.marker.setVisibility(character.isMarked() ? View.VISIBLE : View.INVISIBLE);
+        holder.selectedOverlay.setVisibility(character.isSelected() ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -70,25 +71,32 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
     }
 
     private String getInitiativeBreakdown(Context context, Character character) {
-        return context.getString(R.string.initiative_breakdown, character.getD20(), character.getModifier());
+        return context.getString(R.string.initiative_breakdown,
+                character.getD20(),
+                character.getModifier() >= 0 ? "+" : "",
+                character.getModifier());
     }
 
     class CharacterViewHolder extends RecyclerView.ViewHolder {
         View deleteIcon;
         View container;
+        View background;
         TextView name;
         TextView initiative;
         TextView initiativeBreakdown;
         View marker;
+        View selectedOverlay;
 
         CharacterViewHolder(View itemView) {
             super(itemView);
-            deleteIcon = itemView.findViewById(R.id.delete_icon);
+            deleteIcon = itemView.findViewById(R.id.skull_icon);
             container = itemView.findViewById(R.id.character_container);
+            background = itemView.findViewById(R.id.background);
             name = itemView.findViewById(R.id.name);
             initiative = itemView.findViewById(R.id.initiative);
             initiativeBreakdown = itemView.findViewById(R.id.initiative_breakdown);
             marker = itemView.findViewById(R.id.marker);
+            selectedOverlay = itemView.findViewById(R.id.selected_overlay);
         }
     }
 
