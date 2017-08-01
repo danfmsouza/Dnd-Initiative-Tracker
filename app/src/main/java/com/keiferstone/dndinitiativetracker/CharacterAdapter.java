@@ -39,16 +39,16 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
         holder.container.setOnLongClickListener(v -> {
             if (listener != null) {
                 listener.onCharacterLongClicked(character, holder.getAdapterPosition());
-                return true;
-            } else {
-                return false;
             }
+            return true;
         });
         holder.background.setBackgroundColor(getBackgroundColor(holder.itemView.getContext(), position));
+        holder.background.setVisibility(character.isDead() ? View.GONE : View.VISIBLE);
         holder.name.setText(character.getName());
         holder.initiative.setText(String.valueOf(character.getInitiative()));
         holder.initiativeBreakdown.setText(getInitiativeBreakdown(holder.itemView.getContext(), character));
         holder.marker.setVisibility(character.isMarked() ? View.VISIBLE : View.INVISIBLE);
+        holder.selectedOverlay.setVisibility(character.isSelected() ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -81,16 +81,18 @@ class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterVi
         TextView initiative;
         TextView initiativeBreakdown;
         View marker;
+        View selectedOverlay;
 
         CharacterViewHolder(View itemView) {
             super(itemView);
-            deleteIcon = itemView.findViewById(R.id.delete_icon);
+            deleteIcon = itemView.findViewById(R.id.skull_icon);
             container = itemView.findViewById(R.id.character_container);
             background = itemView.findViewById(R.id.background);
             name = itemView.findViewById(R.id.name);
             initiative = itemView.findViewById(R.id.initiative);
             initiativeBreakdown = itemView.findViewById(R.id.initiative_breakdown);
             marker = itemView.findViewById(R.id.marker);
+            selectedOverlay = itemView.findViewById(R.id.selected_overlay);
         }
     }
 
