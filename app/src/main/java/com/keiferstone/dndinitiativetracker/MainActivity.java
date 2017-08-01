@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements
         // Init data
         characterStorage = new CharacterStorage(this);
         characters = characterStorage.loadAllCharacters();
+        deselectCharacters();
         sortCharacters();
 
         // Init views
@@ -100,12 +101,6 @@ public class MainActivity extends AppCompatActivity implements
         for (Character character : characters) {
             characterStorage.saveCharacter(character);
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        deselectCharacters();
     }
 
     @Override
